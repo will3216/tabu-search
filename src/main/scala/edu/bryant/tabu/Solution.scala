@@ -57,4 +57,11 @@ class Solution(val task_list: Array[Task]) {
 
     task_list.foldLeft(0.0) { (sum, t) => sum + (t.actual_cost * scala.math.exp(-Tabu.config.getDouble("interest_rate").get * t.start_time + probability(t))) }
   }
+
+  def task_list_clone: Array[Task] = task_list.map{t =>
+    val task = new Task(t.task_id, t.product_id, t.duration, t.cost, t.probability, t.resource_requirements, t.outsourcing_cost, t.precedence_constraint)
+    task.outsourced = t.outsourced
+    task.set_start_time(t.start_time)
+    task
+  }
 }
