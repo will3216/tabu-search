@@ -2,7 +2,24 @@ package edu.bryant.tabu
 
 class Solution(val task_list: Array[Task]) {
   def value = cost_due_to_delay + present_value_cost
-  def valid = false
+  def valid = task_order_constraint && resource_constraint
+
+  def resource_constraint: Boolean = {
+    def combine(a: Array[Int], b: Array[Int]): Array[Int] = {
+      a.zip(b).map(c => c._1 + c._2)
+    }
+    def enough(required: Array[Int], available: Array[Int]): Boolean = {
+      required.zip(available).foldLeft(true) {(valid, i) => valid && i._1 <= i._2}
+    }
+    def available: Array[Int] = {
+      Tabu.config.getList("resources_available").map(_.toInt).toArray
+    }
+    !task_list.map {t =>
+      enough(task_list.filter(i =>
+        i.task_id != t.task_id && i.start_time <= t.start_time && (i.start_time + i.duration) >= i.start_time
+      ).map(_.resource_requirements).foldLeft(Array[Int]()) {(a,b) => combine(a,b)}, available)
+    }.exists(_ == false)
+  }
 
   def task_order_constraint: Boolean = {
     task_list.foldLeft(true) {(valid, t) => valid && Tabu.config.getList("task_requirements." + t.task_id.toString).foldLeft(true) {(valid2, i) =>
