@@ -4,7 +4,7 @@ import org.specs2.mutable.Specification
 
 class SolutionSpec extends Specification {
   "Solution" should {
-    val tabu = Tabu.set_config_file("tabu.config")
+    val tabu = Tabu.set_config_file("src/test/scala/edu/bryant/tabu/fixtures/tabu.config")
 
     "have a task list" in {
       val solution = new Solution(Array(TaskFactory.build()))
