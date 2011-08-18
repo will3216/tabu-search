@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="org.scala-tools.testing_scalacheck_2.9.0-1_1.9">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/org.scala-tools.testing/scalacheck_2.9.0-1/scalacheck_2.9.0-1-1.9.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/org.scala-tools.testing/scalacheck_2.9.0-1/scalacheck_2.9.0-1-1.9-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/org.scala-tools.testing/scalacheck_2.9.0-1/scalacheck_2.9.0-1-1.9-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

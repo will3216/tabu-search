@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="org.parboiled_parboiled-java_1.0.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/org.parboiled/parboiled-java/parboiled-java-1.0.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/org.parboiled/parboiled-java/parboiled-java-1.0.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/org.parboiled/parboiled-java/parboiled-java-1.0.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

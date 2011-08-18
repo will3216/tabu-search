@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="com.twitter_json_2.8.1_2.1.6">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/com.twitter/json_2.8.1/json_2.8.1-2.1.6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

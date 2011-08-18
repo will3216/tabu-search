@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="org.specs2_specs2_2.9.1.RC2_1.6-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/org.specs2/specs2_2.9.1.RC2/specs2_2.9.1.RC2-1.6-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib_managed/docs/org.specs2/specs2_2.9.1.RC2/specs2_2.9.1.RC2-1.6-SNAPSHOT-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/org.specs2/specs2_2.9.1.RC2/specs2_2.9.1.RC2-1.6-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

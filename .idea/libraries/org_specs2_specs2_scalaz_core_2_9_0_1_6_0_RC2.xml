@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="org.specs2_specs2-scalaz-core_2.9.0-1_6.0.RC2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/org.specs2/specs2-scalaz-core_2.9.0-1/specs2-scalaz-core_2.9.0-1-6.0.RC2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/org.specs2/specs2-scalaz-core_2.9.0-1/specs2-scalaz-core_2.9.0-1-6.0.RC2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

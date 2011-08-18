@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="org.hamcrest_hamcrest-all_1.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/jars/org.hamcrest/hamcrest-all/hamcrest-all-1.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib_managed/srcs/org.hamcrest/hamcrest-all/hamcrest-all-1.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
