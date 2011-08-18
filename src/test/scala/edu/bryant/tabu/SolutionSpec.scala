@@ -52,13 +52,13 @@ class SolutionSpec extends Specification {
     }
 
     "not fail if properly utilizing resources" in {
-      val solution = new Solution(Array(TaskFactory.build(start_time=0, resource_requirements = Array(1,1,0,0)), TaskFactory.build(start_time=0, resource_requirements = Array(0,0,1,1))))
+      val solution = new Solution(Array(TaskFactory.build(start_time=0, resource_requirements = Array(1,1,0,0), task_id=1), TaskFactory.build(start_time=0, resource_requirements = Array(0,0,1,1), task_id=2)))
 
       solution.resource_constraint mustEqual(true)
     }
 
     "fail if utilizing too many resources" in {
-      val solution = new Solution(Array(TaskFactory.build(start_time=0, resource_requirements = Array(0,1,1,0)), TaskFactory.build(start_time=0, resource_requirements = Array(0,0,1,1))))
+      val solution = new Solution(Array(TaskFactory.build(start_time=0, resource_requirements = Array(0,1,1,0), task_id=1), TaskFactory.build(start_time=0, resource_requirements = Array(0,0,1,1), task_id=2)))
 
       solution.resource_constraint mustEqual(false)
     }
