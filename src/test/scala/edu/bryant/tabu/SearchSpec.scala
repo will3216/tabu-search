@@ -16,5 +16,12 @@ class SearchSpec extends Specification {
 
       search.duration mustEqual 3
     }
+
+    "generate an initial solution" in {
+      val task_list = Array[Task](TaskFactory.build_empty(duration = 1), TaskFactory.build_empty(duration = 2))
+      val search = new Search(task_list)
+
+      search.best_solution.task_list(0).start_time must beGreaterThan(-1)
+    }
   }
 }

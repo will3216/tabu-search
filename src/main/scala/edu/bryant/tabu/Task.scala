@@ -5,6 +5,7 @@ class Task(val task_id: Int, val product_id: Int, val duration: Int, val cost: I
   var outsourced: Boolean = false
   private var _start_time: Option[Int] = None;
 
+  def random_start_time(sum_all_durations: Int) = set_start_time(scala.util.Random.nextInt(sum_all_durations - duration + 1))
   def set_start_time(value: Int)= { _start_time = Some(value) }
   def start_time = { _start_time.get }
 

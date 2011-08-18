@@ -4,12 +4,10 @@ import net.lag.configgy.Configgy
 import net.lag.logging.Logger
 
 object Tabu {
-  var interest_rate = 0.0068
-}
+  var config = Configgy.config
 
-class Tabu(configFile: String = "tabu.config") {
-  Configgy.configure(configFile)
-  val config = Configgy.config
-
-  Tabu.interest_rate = config.getDouble("interest_rate").getOrElse(0.0068)
+  def set_config_file(configFile: String) = {
+    Configgy.configure(configFile)
+    config = Configgy.config
+  }
 }

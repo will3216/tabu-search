@@ -4,7 +4,7 @@ import org.specs2.mutable.Specification
 
 class SolutionSpec extends Specification {
   "Solution" should {
-    Tabu.interest_rate = 0.0068
+    val tabu = Tabu.set_config_file("tabu.config")
 
     "have a task list" in {
       val solution = new Solution(Array(TaskFactory.build()))
@@ -33,6 +33,22 @@ class SolutionSpec extends Specification {
       val solution = new Solution(Array(task1, task2))
 
       solution.value must beCloseTo(386541.0, 6365)
+    }
+  }
+
+  "constraints" should {
+    val tabu = Tabu.set_config_file("src/test/scala/edu/bryant/tabu/fixtures/tabu.config")
+
+    "require tasks to be in the correct order" in {
+      val solution = new Solution(Array(TaskFactory.build(task_id=4, start_time=3), TaskFactory.build(task_id=7, start_time=0, duration=2)))
+
+      solution.task_order_constraint mustEqual(true)
+    }
+
+    "fail when tasks aren't in the correct order" in {
+      val solution = new Solution(Array(TaskFactory.build(task_id=4, start_time=0), TaskFactory.build(task_id=7, start_time=3, duration=2)))
+
+      solution.task_order_constraint mustEqual(false)
     }
   }
 }

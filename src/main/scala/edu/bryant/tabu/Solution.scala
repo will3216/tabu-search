@@ -2,6 +2,14 @@ package edu.bryant.tabu
 
 class Solution(val task_list: Array[Task]) {
   def value = cost_due_to_delay + present_value_cost
+  def valid = false
+
+  def task_order_constraint: Boolean = {
+    task_list.foldLeft(true) {(valid, t) => valid && Tabu.config.getList("task_requirements." + t.task_id.toString).foldLeft(true) {(valid2, i) =>
+      val previous = task_list.filter(_.task_id == i.toInt)
+      valid2 && (previous.size == 0 || t.start_time >= (previous.first.start_time + previous.first.duration))}
+    }
+  }
 
   def cost_due_to_delay: Double = {
     val discrete_cost = scala.collection.immutable.HashMap[Int, Array[Double]](
@@ -29,6 +37,6 @@ class Solution(val task_list: Array[Task]) {
         sum + scala.math.log(t.probability)}
     }
 
-    task_list.foldLeft(0.0) { (sum, t) => sum + (t.actual_cost * scala.math.exp(-Tabu.interest_rate * t.start_time + probability(t))) }
+    task_list.foldLeft(0.0) { (sum, t) => sum + (t.actual_cost * scala.math.exp(-Tabu.config.getDouble("interest_rate").get * t.start_time + probability(t))) }
   }
 }
