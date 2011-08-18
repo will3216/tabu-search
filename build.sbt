@@ -11,7 +11,10 @@ retrieveManaged := true
 testFrameworks += new TestFramework("org.specs2.runner.SpecsFramework")
 
 libraryDependencies ++= Seq(
-  "org.specs2" %% "specs2" % "1.6-SNAPSHOT" % "test"
+  "org.specs2" %% "specs2" % "1.6-SNAPSHOT" % "test",
+  "net.lag" % "configgy" % "2.0.2"
 )
+
+resolvers += "Twitter Repository" at "http://maven.twttr.com"
 
 resolvers += ScalaToolsSnapshots
