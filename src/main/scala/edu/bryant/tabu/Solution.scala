@@ -1,7 +1,7 @@
 package edu.bryant.tabu
 
 class Solution(val task_list: Array[Task]) {
-  def value = 636541
+  def value = cost_due_to_delay + present_value_cost
 
   def cost_due_to_delay: Double = {
     val discrete_cost = scala.collection.immutable.HashMap[Int, Array[Double]](

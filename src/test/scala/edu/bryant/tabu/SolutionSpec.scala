@@ -4,6 +4,8 @@ import org.specs2.mutable.Specification
 
 class SolutionSpec extends Specification {
   "Solution" should {
+    Tabu.interest_rate = 0.0068
+
     "have a task list" in {
       val solution = new Solution(Array(TaskFactory.build()))
       solution.task_list must not be empty
@@ -26,8 +28,11 @@ class SolutionSpec extends Specification {
     }
 
     "compute the value" in {
-      val solution = new Solution(Array(TaskFactory.build(start_time = 0), TaskFactory.build(start_time = 150)))
-      solution.value mustEqual 636541
+      val task1 = TaskFactory.build(cost=80000, duration=150, probability=1.0, outsourced=false, start_time=0)
+      val task2 = TaskFactory.build(outsourcing_cost=160000, duration=100, probability=0.98, outsourced=true, start_time=150)
+      val solution = new Solution(Array(task1, task2))
+
+      solution.value must beCloseTo(386541.0, 6365)
     }
   }
 }
