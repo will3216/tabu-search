@@ -18,7 +18,6 @@ class Search(val task_list: Array[Task]) {
   def search: Solution = {
     fill_list
     val total_cycles = Tabu.config.getInt("cycles").get
-    println("Best: " + best_solution.value.toString)
 
     do {
       var aspiration_solution = aspiration
@@ -26,13 +25,10 @@ class Search(val task_list: Array[Task]) {
         if(aspiration_solution.value < best_solution.value) {
           best_solution = new Solution(aspiration_solution.task_list_clone)
           non_improving_cycles = 0
-          println("Best: " + best_solution.value.toString)
         }
       step
       non_improving_cycles += 1
-      println(total_cycles - non_improving_cycles)
     } while(non_improving_cycles < total_cycles)
-    println("Best: " + best_solution.value.toString)
     best_solution
   }
 
@@ -80,7 +76,6 @@ class Search(val task_list: Array[Task]) {
       if (step_best.value < best_solution.value) {
         best_solution = new Solution(step_best.task_list_clone)
         non_improving_cycles = 0
-        println("Best: " + best_solution.value.toString)
       }
     }
 

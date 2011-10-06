@@ -1,3 +1,9 @@
+seq(assemblySettings: _*)
+
+jarName in assembly := "tabu.jar"
+
+test in Assembly := {}
+
 organization := "edu.bryant.tabu"
 
 name := "tabu"
@@ -18,3 +24,4 @@ libraryDependencies ++= Seq(
 resolvers += "Twitter Repository" at "http://maven.twttr.com"
 
 resolvers += ScalaToolsSnapshots
+
