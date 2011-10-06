@@ -1,6 +1,6 @@
 package edu.bryant.tabu
 
-class Solution(val task_list: Array[Task]) {
+class Solution(val available:Array[Int], val interest_rate: Double, val task_list: Array[Task]) {
   def value = cost_due_to_delay + present_value_cost
   def valid = !task_list.exists(_.empty_start_time) && task_order_constraint && resource_constraint
 
@@ -10,9 +10,6 @@ class Solution(val task_list: Array[Task]) {
     }
     def enough(required: Array[Int], available: Array[Int]): Boolean = {
       required.zip(available).foldLeft(true) {(valid, i) => valid && i._1 <= i._2}
-    }
-    def available: Array[Int] = {
-      Tabu.config.getList("resources_available").map(_.toInt).toArray
     }
 
     val resource_constrained = !task_list.map {t =>
@@ -58,7 +55,7 @@ class Solution(val task_list: Array[Task]) {
         sum + scala.math.log(t.probability)}
     }
 
-    task_list.foldLeft(0.0) { (sum, t) => sum + (t.actual_cost * scala.math.exp(-Tabu.config.getDouble("interest_rate").get * t.start_time + probability(t))) }*10000
+    task_list.foldLeft(0.0) { (sum, t) => sum + (t.actual_cost * scala.math.exp(-interest_rate * t.start_time + probability(t))) }*10000
   }
 
   def task_list_clone: Array[Task] = task_list.map{t =>

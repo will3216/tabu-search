@@ -3,13 +3,15 @@ import net.lag.configgy.{Configgy,RuntimeEnvironment}
 import tabu._
 
 object Main extends App {
-  private val runtime = new RuntimeEnvironment(getClass)
-  runtime.load(args)
+  //private val runtime = new RuntimeEnvironment(getClass)
+  //runtime.load(args)
+  Configgy.configure("tabu.config")
 
   val input = new Input
   val loaded_task_list = input.create_task_list();
   val new_search = new Search(loaded_task_list);
   var best_solution: Solution = new_search.search;
+
   println("Optimal Value: " + best_solution.value.toString)
   best_solution.task_list.foreach{ i =>
     println(i.task_id + ", " + i.start_time + "\n")
