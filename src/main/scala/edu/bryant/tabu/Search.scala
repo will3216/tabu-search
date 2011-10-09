@@ -1,27 +1,25 @@
 package edu.bryant.tabu
 
-class Search(val task_list: Array[Task]) {
+class Search(val task_list: Array[Task], total_cycles: Int) {
   val random = new scala.util.Random
   random.setSeed(System.nanoTime)
-  var best_solution = new Solution(available, interest_rate, Array[Task]())
-  var current_solution = new Solution(available, interest_rate, Array[Task]())
+  var best_solution = SolutionFactory.build_new_solution(Array[Task]())
+  var current_solution = SolutionFactory.build_new_solution(Array[Task]())
   var tabu_list = Array[Solution]()
   var non_improving_cycles = 0
-  val total_cycles = Tabu.config.getInt("cycles").get
+  //val total_cycles = Tabu.config.getInt("cycles").get
   val steps = Tabu.config.getConfigMap("steps").get
   val number_of_non_aspiration_steps = steps.keys.filter(_ != "aspiration").size
   val step_values = Array.fill(number_of_non_aspiration_steps, 3)(0)
   fill_step_values_array
   val aspiration_removes = steps.getConfigMap("aspiration").get.getString("removes").get.toInt
   val tabu_size = Tabu.config.getInt("tabu_size").get
-  def available_resources: Array[Int] = {
-      Tabu.config.getList("resources_available").map(_.toInt).toArray
-  }
-  val interest_rate = Tabu.config.getDouble("interest_rate").get
-  val available = available_resources
   var total_fails = 0
   var total_task_fails = 0
   val solution_packing = Tabu.config.getString("solution_packing").get.toBoolean
+  val hard_pack = Tabu.config.getString("hard_pack").get.toBoolean
+
+  //step_values(0)(1) = standard_neighbors
 
   def fill_step_values_array = {
     //time to sleep! remember to finish this or do not save!
@@ -38,8 +36,8 @@ class Search(val task_list: Array[Task]) {
   def duration = task_list.foldLeft(0) {(sum,t) => sum + t.duration}
 
   def fill_list = do {
-    best_solution = new Solution(available, interest_rate, task_list.map(t => t.random_start_time(task_list.foldLeft(0) {(sum,t) => sum + t.duration})))
-    current_solution = new Solution(available, interest_rate, best_solution.task_list_clone)
+    best_solution =  new_neighbor(SolutionFactory.build_new_solution(task_list), None)
+    current_solution = SolutionFactory.clone(best_solution)
   } while(!best_solution.valid)
 
   def search: Solution = {
@@ -47,42 +45,45 @@ class Search(val task_list: Array[Task]) {
 
     do {
       var aspiration_solution = aspiration
-        current_solution = new Solution(available, interest_rate, aspiration_solution.task_list_clone)
+        current_solution = SolutionFactory.clone(aspiration_solution)
         if(aspiration_solution.value < best_solution.value) {
-          best_solution = new Solution(available, interest_rate, aspiration_solution.task_list_clone)
+          best_solution = SolutionFactory.clone(aspiration_solution)
           non_improving_cycles = 0
         }
       step
       non_improving_cycles += 1
     } while(non_improving_cycles < total_cycles)
-    println("Fail Count Total: " + total_fails.toInt)
-    println("Task Fail Count Total: " + total_task_fails.toInt)
+
+    if(hard_pack == true){
+      val hard_packed_solution = hard_pack_solution(best_solution)
+      if(best_solution.value > hard_packed_solution.value){
+         best_solution = SolutionFactory.clone(hard_pack_solution(best_solution))
+      }
+    }
 
     best_solution
   }
 
   def step: Solution = {
-    var new_solution = new Solution(available, interest_rate, current_solution.task_list_clone)
 
     for(i <- 0 until number_of_non_aspiration_steps){
-
-      var step_best = new Solution(available, interest_rate, current_solution.task_list_clone)
-      var move_best = new Solution(available, interest_rate, current_solution.task_list_clone)
+      var step_best = SolutionFactory.clone(current_solution)
+      var move_best = SolutionFactory.clone(current_solution)
       var moves = 1
       do{
         var cycles = 0
         do {
 
-          new_solution = new_neighbor(current_solution, step_values(i)(0))
+          var new_solution = new_neighbor(current_solution, Some(step_values(i)(0)))
 
-          if (tabu(new_solution) == false) {
+          if (tabu(new_solution) == false && new_solution.valid == true) {
             if (cycles == 0){
-              move_best = new Solution(available, interest_rate, new_solution.task_list_clone)
+              move_best = SolutionFactory.clone(new_solution)
             }else{
               if (move_best.value >= new_solution.value) {
-                move_best = new Solution(available, interest_rate, new_solution.task_list_clone)
+                move_best = SolutionFactory.clone(new_solution)
                 if (move_best.value < step_best.value) {
-                  step_best = new Solution(available, interest_rate, move_best.task_list_clone)
+                  step_best = SolutionFactory.clone(move_best)
                 }
               }
             }
@@ -91,37 +92,38 @@ class Search(val task_list: Array[Task]) {
 
         } while(cycles < step_values(i)(1))
 
-        current_solution = new Solution(available, interest_rate, move_best.task_list_clone)
+        current_solution = SolutionFactory.clone(move_best)
 
         moves += 1
       }while (moves < step_values(i)(2))
 
       tabu_list = tabu_list.take(0)
-      current_solution = new Solution(available, interest_rate, step_best.task_list_clone)
+      current_solution = SolutionFactory.clone(step_best)
       var new_value = step_best.value
 
       if(solution_packing == true){
-        val transpose_solution = new Solution(available, interest_rate, step_best.task_list_clone)
+        val transpose_solution = SolutionFactory.clone(step_best)
         transpose_start_times(transpose_solution)
         val transpose_value = transpose_solution.value
 
         if(new_value > transpose_value){
-          step_best = new Solution(available, interest_rate, transpose_solution.task_list_clone)
+          step_best = SolutionFactory.clone(transpose_solution)
           new_value = transpose_value
         }
       }
 
+      current_solution = SolutionFactory.clone(step_best)
       if (step_best.value < best_solution.value) {
-        best_solution = new Solution(available, interest_rate, step_best.task_list_clone)
+        best_solution = SolutionFactory.clone(step_best)
         non_improving_cycles = 0
       }
     }
 
-    new_solution
+    current_solution
   }
 
   def aspiration: Solution = {
-    val aspiration_solution = new_neighbor(current_solution, aspiration_removes)
+    val aspiration_solution = new_neighbor(current_solution, Some(aspiration_removes))
     aspiration_solution
   }
 
@@ -135,7 +137,7 @@ class Search(val task_list: Array[Task]) {
   }
 
   def randomly_change_start_times(solution: Solution, quantity: Int):Solution = {
-    var new_solution = new Solution(available, interest_rate, solution.task_list_clone)
+    var new_solution = SolutionFactory.clone(solution)
 
     do {
       (0 to quantity).foreach {i =>
@@ -147,17 +149,26 @@ class Search(val task_list: Array[Task]) {
     new_solution
   }
 
-  def new_neighbor(solution:Solution, removes: Int): Solution = {
-    var new_valid_neighbor = new Solution(available, interest_rate, solution.task_list_clone)
-    var fail_count = 0
+  def new_neighbor(solution:Solution, remove_option: Option[Int]): Solution = {
+    var new_valid_neighbor = SolutionFactory.clone(solution)
+    var fail_count_1 = 0
     val max_fails = 10
     var good_neighbor = false
+    var removes = 0
+    var fail_count = 0
+
+    if(remove_option.isEmpty == true){
+    fail_count_1 = -1337
+    } else{
+      removes = remove_option.get
+    }
+
     do{
-      var neighbor = new Solution(available, interest_rate, remove_start_times(solution, removes).task_list_clone)
+      var neighbor = remove_start_times(SolutionFactory.clone(solution), removes)
       new_start_time_boundaries(neighbor)
       fail_count = 0
       do{
-        val possible_neighbor = new Solution(available, interest_rate, neighbor.task_list_clone)
+        val possible_neighbor = SolutionFactory.clone(neighbor)
         possible_neighbor.task_list.filter(t => t.empty_start_time == true).foreach{y =>
           val earliest = y.earliest_start_time
           val latest = y.latest_start_time
@@ -173,20 +184,19 @@ class Search(val task_list: Array[Task]) {
         }
 
         if (possible_neighbor.valid == true){
-          neighbor = new Solution(available, interest_rate, possible_neighbor.task_list_clone)
+          new_valid_neighbor = SolutionFactory.clone(possible_neighbor)
           good_neighbor = true
         }else{
           fail_count += 1
           total_fails += 1
         }
       }while(good_neighbor == false && fail_count <= max_fails)
-      new_valid_neighbor = new Solution(available, interest_rate, neighbor.task_list_clone)
-    }while(good_neighbor == false)
+    }while(good_neighbor == false && fail_count_1 <= max_fails)
     new_valid_neighbor
   }
 
   def remove_start_times(solution: Solution, removes: Int): Solution = {
-    val remove_solution = new Solution(available, interest_rate, shuffle(solution.task_list_clone, random))
+    val remove_solution = SolutionFactory.build_new_solution(shuffle(solution.task_list_clone, random))
 
     for (i <- 0 until removes){
       remove_solution.task_list(i).no_start_time
@@ -325,14 +335,44 @@ class Search(val task_list: Array[Task]) {
     val resource_constrained = {
       enough(task_list.filter(i => i.task_id != t.task_id && i.empty_start_time == false).filter(i =>
         i.start_time <= t.start_time && (i.start_time + i.duration) >= t.start_time
-      ).map(_.resource_requirements).foldLeft(t.resource_requirements) {(a,b) => combine(a,b)}, available)
+      ).map(_.resource_requirements).foldLeft(t.resource_requirements) {(a,b) => combine(a,b)}, SolutionFactory.available)
     }
     resource_constrained
   }
 
-  def transpose_start_times(solution: Solution): Solution = {
+  def transpose_start_times(solution_to_transpose: Solution): Solution = {
+    val solution = SolutionFactory.clone(solution_to_transpose)
     val negative_transpose = solution.task_list.map(t => t.start_time).min
     solution.task_list.foreach(t => t.set_start_time(t.start_time - negative_transpose))
     solution
+  }
+
+  def hard_pack_solution(solution_to_hard_pack:Solution): Solution = {
+    var solution = SolutionFactory.clone(solution_to_hard_pack)
+    do{
+      var hold_solution = SolutionFactory.clone(solution)
+      new_start_time_boundaries(hold_solution)
+      hold_solution.task_list.sortBy(_.start_time).foreach{ i =>
+        for(j <- i.earliest_start_time to i.latest_start_time){
+          var temp_solution = SolutionFactory.clone(hold_solution)
+          i.set_start_time(j)
+          if(hold_solution.valid == true){
+            if(hold_solution.value <= temp_solution.value){
+              solution = SolutionFactory.clone(hold_solution)
+            }else{
+              hold_solution = SolutionFactory.clone(temp_solution)
+            }
+          }else{
+            hold_solution = SolutionFactory.clone(temp_solution)
+          }
+        }
+        new_start_time_boundaries(hold_solution)
+      }
+    }while(solution.valid == false)
+    if(solution.value < solution_to_hard_pack.value){
+      solution
+    }else {
+      solution_to_hard_pack
+    }
   }
 }
