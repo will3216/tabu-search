@@ -11,8 +11,8 @@ object Main extends App {
   val example_number = Tabu.config.getList("examples_to_run").map(_.toInt).toArray
   for(ex <- 0 until example_number.size){
     val loaded_task_list = input.create_task_list(example_number(ex));
-    for(j <- 1 to 5){
-      for(i <- 1 to 100){
+    for(j <- 1 to 15){
+      for(i <- 2 to 9){
         var exp_id = i.toString + "nic" + j.toString
         var p = 0
         if(i <= 50) {p = i }else {
@@ -54,8 +54,8 @@ object Main extends App {
   }
 
   def print_results(exp_id: String, solution: Solution, run_time: Double, variable_value: Int, example: Int){
-    val output = new java.io.FileWriter("results_file_7.txt", true)
-    output.write(exp_id.toString + ", non-improving cycles, " + example.toString + ", " + variable_value.toString + ", " +
+    val output = new java.io.FileWriter("results_file_10.txt", true)
+    output.write(exp_id.toString + ", standard removes, " + example.toString + ", " + variable_value.toString + ", " +
       solution.value.toString + ", " + run_time.toString)
     sort_tasks_by_start_time.foreach{ i =>
       output.write(", " + i.start_time)
